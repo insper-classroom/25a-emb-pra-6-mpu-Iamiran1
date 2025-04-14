@@ -69,26 +69,39 @@ void mpu6050_task(void *p) {
 
     mpu6050_reset();
     int16_t acceleration[3], gyro[3], temp;
-
+    FusionAhrs ahrs;
+    FusionAhrsInitialise(&ahrs);
+    int click = 1;
     while(1) {
         // leitura da MPU, sem fusao de dados
         mpu6050_read_raw(acceleration, gyro, &temp);
-        // printf("Acc. X = %d, Y = %d, Z = %d\n", acceleration[0], acceleration[1], acceleration[2]);
-        // printf("Gyro. X = %d, Y = %d, Z = %d\n", gyro[0], gyro[1], gyro[2]);
-        // printf("Temp. = %f\n", (temp / 340.0) + 36.53);
-        FusionAhrs ahrs;
-        FusionAhrsInitialise(&ahrs);
-        const FusionVector gyroscope = {gyro[0], gyro[1], gyro[2]}; // replace this with actual gyroscope data in degrees/s
-        const FusionVector accelerometer = {acceleration[0], acceleration[1], acceleration[2]}; // replace this with actual accelerometer data in g
-
+        FusionVector gyroscope = {
+            .axis.x = gyro[0] / 131.0f, // Conversão para graus/s
+            .axis.y = gyro[1] / 131.0f,
+            .axis.z = gyro[2] / 131.0f,
+        };
+  
+        FusionVector accelerometer = {
+            .axis.x = acceleration[0] / 16384.0f, // Conversão para g
+            .axis.y = acceleration[1] / 16384.0f,
+            .axis.z = acceleration[2] / 16384.0f,
+        };      
+  
         FusionAhrsUpdateNoMagnetometer(&ahrs, gyroscope, accelerometer, SAMPLE_PERIOD);
-
+  
         const FusionEuler euler = FusionQuaternionToEuler(FusionAhrsGetQuaternion(&ahrs));
-
-        printf("Roll %0.1f, Pitch %0.1f, Yaw %0.1f\n", euler.angle.roll, euler.angle.pitch, euler.angle.yaw);    
+        printf("X %0.3f, Y %0.3f, Z %0.3f\n", accelerometer.axis.x,accelerometer.axis.y,accelerometer.axis.z);
+        if(accelerometer.axis.x > 0.100){
+            click = 1;
+        }
+        else{
+            click = 0;
+        }
+        printf("Click: %d\n", click);
         vTaskDelay(pdMS_TO_TICKS(10));
-    }
+        }
 }
+
 
 int main() {
     stdio_init_all();

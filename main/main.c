@@ -73,10 +73,19 @@ void mpu6050_task(void *p) {
     while(1) {
         // leitura da MPU, sem fusao de dados
         mpu6050_read_raw(acceleration, gyro, &temp);
-        printf("Acc. X = %d, Y = %d, Z = %d\n", acceleration[0], acceleration[1], acceleration[2]);
-        printf("Gyro. X = %d, Y = %d, Z = %d\n", gyro[0], gyro[1], gyro[2]);
-        printf("Temp. = %f\n", (temp / 340.0) + 36.53);
+        // printf("Acc. X = %d, Y = %d, Z = %d\n", acceleration[0], acceleration[1], acceleration[2]);
+        // printf("Gyro. X = %d, Y = %d, Z = %d\n", gyro[0], gyro[1], gyro[2]);
+        // printf("Temp. = %f\n", (temp / 340.0) + 36.53);
+        FusionAhrs ahrs;
+        FusionAhrsInitialise(&ahrs);
+        const FusionVector gyroscope = {gyro[0], gyro[1], gyro[2]}; // replace this with actual gyroscope data in degrees/s
+        const FusionVector accelerometer = {acceleration[0], acceleration[1], acceleration[2]}; // replace this with actual accelerometer data in g
 
+        FusionAhrsUpdateNoMagnetometer(&ahrs, gyroscope, accelerometer, SAMPLE_PERIOD);
+
+        const FusionEuler euler = FusionQuaternionToEuler(FusionAhrsGetQuaternion(&ahrs));
+
+        printf("Roll %0.1f, Pitch %0.1f, Yaw %0.1f\n", euler.angle.roll, euler.angle.pitch, euler.angle.yaw);    
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }

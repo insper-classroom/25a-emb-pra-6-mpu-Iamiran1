@@ -12,6 +12,7 @@
 
 #include "Fusion.h"
 #include "hardware/adc.h"
+#include <inttypes.h>
 
 
 #define SAMPLE_PERIOD (0.01f) // replace this with actual sample period
@@ -107,7 +108,7 @@ void mpu6050_task(void *p) {
         if( -0.060 <= accelerometer.axis.y  && accelerometer.axis.y < -0.020){
             accelerometer.axis.y = 0.000;
         }
-        if( 1.030<= accelerometer.axis.z && accelerometer.axis.z  <1.060){
+        if( 1.020<= accelerometer.axis.z && accelerometer.axis.z  <1.08){
             accelerometer.axis.z = 0.0000;
         }
         data position;
@@ -128,18 +129,19 @@ void mpu6050_task(void *p) {
 void send_uart_packet(uint8_t axis, int32_t valor) {
     if (valor <= 0) return;
 
+    printf("axis: %d Valor: %" PRId32 "\n", axis,valor);
     uint8_t bytes[4];
     bytes[0] = axis;
     bytes[1] = (valor >> 8) & 0xFF;
     bytes[2] = valor & 0xFF;
     bytes[3] = 0xFF;
-    uart_write_blocking(uart0, bytes, 4);
+    uart_write_blocking(UART_ID, bytes, 4);
 }
 void uart_task(void *p) {
 
     data pin_data;
 
-    uart_init( uart0, BAUD_RATE);
+    uart_init( UART_ID, BAUD_RATE);
     gpio_set_function(UART_TX_PIN, UART_FUNCSEL_NUM(UART_ID, UART_TX_PIN));
     gpio_set_function(UART_RX_PIN, UART_FUNCSEL_NUM(UART_ID, UART_RX_PIN));
     while (1) {

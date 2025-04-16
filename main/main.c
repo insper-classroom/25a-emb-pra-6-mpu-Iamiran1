@@ -79,8 +79,8 @@ void mpu6050_task(void *p) {
     int16_t acceleration[3], gyro[3], temp;
     FusionAhrs ahrs;
     FusionAhrsInitialise(&ahrs);
-    int click = 1;
     while(1) {
+        int click = 1;
         // leitura da MPU, sem fusao de dados
         mpu6050_read_raw(acceleration, gyro, &temp);
         FusionVector gyroscope = {

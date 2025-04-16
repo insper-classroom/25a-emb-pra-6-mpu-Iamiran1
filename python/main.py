@@ -9,12 +9,12 @@ from time import sleep
 
 def move_mouse(axis, value):
     """Move o mouse de acordo com o eixo e valor recebidos."""
-    if axis == 0:
-        pyautogui.moveRel(value, 0)
-    elif axis == 1:
-        pyautogui.moveRel(0, value)
-    # elif axis ==2:
-    #     pyautogui.click()
+    # if axis == 0:
+    #     pyautogui.moveRel(value, 0)
+    # elif axis == 1:
+    #     pyautogui.moveRel(0, value)
+    if axis ==2:
+        pyautogui.click()
 
 def controle(ser):
     """

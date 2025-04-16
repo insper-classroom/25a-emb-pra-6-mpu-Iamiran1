@@ -129,7 +129,7 @@ void mpu6050_task(void *p) {
 void send_uart_packet(uint8_t axis, int32_t valor) {
     if (valor <= 0) return;
 
-    printf("axis: %d Valor: %" PRId32 "\n", axis,valor);
+    // printf("axis: %d Valor: %" PRId32 "\n", axis,valor);
     uint8_t bytes[4];
     bytes[0] = axis;
     bytes[1] = (valor >> 8) & 0xFF;
@@ -146,15 +146,15 @@ void uart_task(void *p) {
     gpio_set_function(UART_RX_PIN, UART_FUNCSEL_NUM(UART_ID, UART_RX_PIN));
     while (1) {
         if (xQueueReceive(xQueuePos, &pin_data, portMAX_DELAY)) {
-            int axis_y = 0;
-            float val_y = pin_data.posicoes.axis.y;
-            int32_t val_y_int = (int32_t)(val_y * 100);
-            send_uart_packet(axis_y,val_y_int);
+            // int axis_y = 0;
+            // float val_y = pin_data.posicoes.axis.y;
+            // int32_t val_y_int = (int32_t)(val_y * 100);
+            // send_uart_packet(axis_y,val_y_int);
 
-            int axis_z = 1;
-            float val_z = pin_data.posicoes.axis.z;
-            int32_t val_z_int = (int32_t)(val_z * 100);
-            send_uart_packet(axis_z,val_z_int);
+            // int axis_z = 1;
+            // float val_z = pin_data.posicoes.axis.z;
+            // int32_t val_z_int = (int32_t)(val_z * 100);
+            // send_uart_packet(axis_z,val_z_int);
 
             int click_val = 2;
             int val_click = pin_data.click;
@@ -170,7 +170,7 @@ int main() {
     xQueuePos = xQueueCreate(32, sizeof(data));
 
     xTaskCreate(mpu6050_task, "mpu6050_Task 1", 8192, NULL, 1, NULL);
-    xTaskCreate(uart_task, "uart_task", 8192, NULL, 1, NULL);
+    xTaskCreate(uart_task, "uart_task", 4095, NULL, 1, NULL);
 
     vTaskStartScheduler();
 

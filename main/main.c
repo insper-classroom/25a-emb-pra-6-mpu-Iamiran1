@@ -97,7 +97,7 @@ void mpu6050_task(void *p) {
         
         FusionAhrsUpdateNoMagnetometer(&ahrs, gyroscope, accelerometer, SAMPLE_PERIOD);
   
-        const FusionEuler euler = FusionQuaternionToEuler(FusionAhrsGetQuaternion(&ahrs));
+        // const FusionEuler euler = FusionQuaternionToEuler(FusionAhrsGetQuaternion(&ahrs));
 
         if(accelerometer.axis.x > 0.500){
             click = 1;
@@ -117,7 +117,7 @@ void mpu6050_task(void *p) {
 
         xQueueSend(xQueuePos, &position, 0);
 
-        vTaskDelay(pdMS_TO_TICKS(200));
+        vTaskDelay(pdMS_TO_TICKS(250));
         }
 }
 

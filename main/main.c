@@ -104,7 +104,7 @@ void mpu6050_task(void *p) {
         else{
             click = 0;
         }
-        if( -0.040 <= accelerometer.axis.y  && accelerometer.axis.y < -0.020){
+        if( -0.060 <= accelerometer.axis.y  && accelerometer.axis.y < -0.020){
             accelerometer.axis.y = 0.000;
         }
         if( 1.030<= accelerometer.axis.z && accelerometer.axis.z  <1.060){
@@ -113,7 +113,7 @@ void mpu6050_task(void *p) {
         data position;
         position.posicoes = accelerometer;
         position.click = click;
-        printf("X %d, Y %0.3f, Z %0.3f\n", click,accelerometer.axis.y,accelerometer.axis.z);
+        // printf("X %d, Y %0.3f, Z %0.3f\n", click,accelerometer.axis.y,accelerometer.axis.z);
 
         xQueueSend(xQueuePos, &position, 0);
 

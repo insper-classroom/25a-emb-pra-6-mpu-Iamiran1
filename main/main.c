@@ -114,11 +114,10 @@ void mpu6050_task(void *p) {
         data position;
         position.posicoes = accelerometer;
         position.click = click;
-        // printf("X %d, Y %0.3f, Z %0.3f\n", click,accelerometer.axis.y,accelerometer.axis.z);
 
         xQueueSend(xQueuePos, &position, 0);
 
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(200));
         }
 }
 
@@ -127,7 +126,7 @@ void mpu6050_task(void *p) {
 #define UART_TX_PIN 0
 #define UART_RX_PIN 1
 void send_uart_packet(uint8_t axis, int32_t valor) {
-    if (valor <= 0) return;
+    if (valor == 0) return;
 
     // printf("axis: %d Valor: %" PRId32 "\n", axis,valor);
     uint8_t bytes[4];
@@ -146,15 +145,32 @@ void uart_task(void *p) {
     gpio_set_function(UART_RX_PIN, UART_FUNCSEL_NUM(UART_ID, UART_RX_PIN));
     while (1) {
         if (xQueueReceive(xQueuePos, &pin_data, portMAX_DELAY)) {
-            // int axis_y = 0;
-            // float val_y = pin_data.posicoes.axis.y;
-            // int32_t val_y_int = (int32_t)(val_y * 100);
-            // send_uart_packet(axis_y,val_y_int);
+            int axis_y = 1;
+            float val_y = pin_data.posicoes.axis.y;
+            // printf("Y %0.3f\n", val_y);
+            int32_t val_y_int =(int32_t)(val_y * 100);
+            // if(val_y < 0){
 
-            // int axis_z = 1;
-            // float val_z = pin_data.posicoes.axis.z;
-            // int32_t val_z_int = (int32_t)(val_z * 100);
-            // send_uart_packet(axis_z,val_z_int);
+            //     val_y_int = -(int32_t)(val_y * 100);
+            // }
+            // else{
+            //     val_y_int = (int32_t)(val_y * 100);
+
+            // }
+            send_uart_packet(axis_y,val_y_int);
+
+            int axis_z = 0;
+            float val_z = pin_data.posicoes.axis.z;
+            int32_t val_z_int =(int32_t)(val_z * 100);
+            // if(val_z < 0){
+
+            //     val_z_int = -(int32_t)(val_z * 100);
+            // }
+            // else{
+            //     val_z_int = (int32_t)(val_z * 100);
+
+            // }
+            send_uart_packet(axis_z,val_z_int);
 
             int click_val = 2;
             int val_click = pin_data.click;

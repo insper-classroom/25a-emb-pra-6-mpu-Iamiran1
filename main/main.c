@@ -97,11 +97,18 @@ void mpu6050_task(void *p) {
         FusionAhrsUpdateNoMagnetometer(&ahrs, gyroscope, accelerometer, SAMPLE_PERIOD);
   
         const FusionEuler euler = FusionQuaternionToEuler(FusionAhrsGetQuaternion(&ahrs));
+
         if(accelerometer.axis.x > 0.500){
             click = 1;
         }
         else{
             click = 0;
+        }
+        if( -0.040 <= accelerometer.axis.y  && accelerometer.axis.y < -0.020){
+            accelerometer.axis.y = 0.000;
+        }
+        if( 1.030<= accelerometer.axis.z && accelerometer.axis.z  <1.060){
+            accelerometer.axis.z = 0.0000;
         }
         data position;
         position.posicoes = accelerometer;

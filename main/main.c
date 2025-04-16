@@ -158,7 +158,7 @@ void uart_task(void *p) {
 
             int click_val = 2;
             int val_click = pin_data.click;
-            send_uart_packet(axis_z,val_click);
+            send_uart_packet(click_val,val_click);
             // printf("X %d, Y %0.3f, Z %0.3f\n", val_click,val_y_int,val_z_int);
 
         }
